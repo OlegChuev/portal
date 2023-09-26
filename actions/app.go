@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"sync"
 
+	"portal/actions/middleware"
+	"portal/actions/routes"
 	"portal/locales"
 	"portal/models"
 	"portal/public"
@@ -65,7 +67,11 @@ func App() *buffalo.App {
 		// Setup and use translations:
 		app.Use(translations())
 
-		app.GET("/", HomeHandler)
+		// Setup project routes
+		routes.SetRoutes(app)
+
+		//Middlewares
+		middleware.SetMiddleware(app)
 
 		app.ServeFiles("/", http.FS(public.FS())) // serve files from the public directory
 	})

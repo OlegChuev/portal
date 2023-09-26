@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+        <title>Portal</title>
+
+        <%= stylesheetTag("application.css") %>
+
+        <meta name="csrf-param" content="authenticity_token" />
+        <meta name="csrf-token" content="<%= authenticity_token %>" />
+
+        <link rel="icon" href="<%= assetPath("images/favicon.ico") %>">
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css" rel="stylesheet">
+    </head>
+
+    <body class="login-page">
+        <%= partial("flash.html") %>
+
+        <div class="login-box">
+            <%= yield %>
+        </div>
+
+        <%= javascriptTag("application.js") %>
+    </body>
+</html>

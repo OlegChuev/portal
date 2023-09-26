@@ -1,0 +1,18 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col"># ID</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for (user) in users { %>
+      <tr>
+        <th scope="row"> <%= user.ID %> </th>
+        <td> <%= user.Name %> </td>
+        <td> <%= user.Email %></td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>

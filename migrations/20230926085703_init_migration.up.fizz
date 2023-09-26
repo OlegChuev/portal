@@ -1,0 +1,9 @@
+create_table("users") {
+    t.Column("id", "bigint", {primary: true})
+    t.Column("name", "string", {"null": true})
+    t.Column("email", "string", {"default": ""})
+    t.Column("password_hash", "string", {})
+
+    t.Column("created_at", "datetime", {})
+    t.Column("updated_at", "datetime", {})
+}

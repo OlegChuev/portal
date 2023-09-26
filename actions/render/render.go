@@ -1,4 +1,4 @@
-package actions
+package render
 
 import (
 	"portal/public"
@@ -28,4 +28,8 @@ func init() {
 			// forms.FormForKey:  forms.FormFor,
 		},
 	})
+}
+
+func GetRender() *render.Engine {
+	return r
 }
