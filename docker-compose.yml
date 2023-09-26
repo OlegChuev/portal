@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    command: bash -c "buffalo dev"
+    volumes:
+      - ./:/app
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:14-alpine
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_NAME}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+    ports:
+      - 5432:5432
+
+  # redis:
+  #   platform: linux/arm64/v8
+  #   image: redis:6-alpine
+  #   volumes:
+  #     - redis:/data
+  #   ports:
+  #     - 6380:6379
+
+volumes:
+  postgres:
+  # redis:
