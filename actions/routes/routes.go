@@ -24,4 +24,12 @@ func setAuthRoutes(app *buffalo.App) {
 	registration := app.Group("/registration")
 	registration.GET("/sign_up", endpoints.SignUpPage)
 	registration.POST("/sign_up", endpoints.SignUp)
+
+	// Dashboard
+	dashboard := app.Group("/dashboard")
+	dashboard.GET("/", endpoints.DashboardPage)
+
+	// Users
+	users := app.Group("/users")
+	users.GET("/", endpoints.Index)
 }

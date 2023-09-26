@@ -2,7 +2,6 @@ package endpoints
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 	"portal/actions/render"
 	"portal/models"
@@ -33,15 +32,15 @@ func SignUp(c buffalo.Context) error {
 
 	tx := c.Value("tx").(*pop.Connection)
 
-	verrs, err := user.Create(tx)
+	verRes, err := user.Create(tx)
 
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-	if verrs.HasAny() {
+	if verRes.HasAny() {
 		c.Set("user", user)
-		c.Set("errors", verrs)
+		c.Set("errors", verRes)
 		template := render.GetRender().HTML("auth/sign_up.html", "layout/auth.html")
 
 		return c.Render(http.StatusOK, template)
@@ -63,7 +62,6 @@ func LogInPage(c buffalo.Context) error {
 
 // LogIn tries to authorize user in application.
 func LogIn(c buffalo.Context) error {
-	fmt.Println("IAM HERE")
 	user := &models.User{}
 
 	if err := c.Bind(user); err != nil {
@@ -77,10 +75,10 @@ func LogIn(c buffalo.Context) error {
 
 	// helper function to handle bad attempts
 	bad := func() error {
-		verrs := validate.NewErrors()
-		verrs.Add("email", "invalid email/password")
+		verRes := validate.NewErrors()
+		verRes.Add("email", "invalid email/password")
 
-		c.Set("errors", verrs)
+		c.Set("errors", verRes)
 		c.Set("user", user)
 
 		template := render.GetRender().HTML("auth/login.html", "layout/auth.html")
@@ -120,5 +118,5 @@ func LogOut(c buffalo.Context) error {
 	c.Session().Clear()
 	c.Flash().Add("success", "You have been logged out!")
 
-	return c.Redirect(http.StatusFound, "/login")
+	return c.Redirect(http.StatusFound, "/auth/login")
 }

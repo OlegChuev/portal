@@ -8,14 +8,13 @@ import (
 	"github.com/gobuffalo/pop/v6"
 	"github.com/gobuffalo/validate/v3"
 	"github.com/gobuffalo/validate/v3/validators"
-	"github.com/gofrs/uuid"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // User is a generated model from buffalo-auth, it serves as the base for username/password authentication.
 type User struct {
-	ID           uuid.UUID `json:"id" db:"id"`
+	ID           int64     `json:"id" db:"id"`
 	Name         string    `json:"name" db:"name"`
 	CreatedAt    time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
@@ -28,53 +27,60 @@ type User struct {
 
 // Create wraps up the pattern of encrypting the password and
 // running validations. Useful when writing tests.
-func (u *User) Create(tx *pop.Connection) (*validate.Errors, error) {
-	u.Email = strings.ToLower(u.Email)
-	ph, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+func (user *User) Create(tx *pop.Connection) (*validate.Errors, error) {
+	user.Email = strings.ToLower(user.Email)
+	ph, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+
 	if err != nil {
 		return validate.NewErrors(), errors.WithStack(err)
 	}
-	u.PasswordHash = string(ph)
-	return tx.ValidateAndCreate(u)
+
+	user.PasswordHash = string(ph)
+
+	return tx.ValidateAndCreate(user)
 }
 
 // String is not required by pop and may be deleted
-func (u User) String() string {
-	ju, _ := json.Marshal(u)
+func (user User) String() string {
+	ju, _ := json.Marshal(user)
 	return string(ju)
 }
 
 // Users is not required by pop and may be deleted
 type Users []User
 
-// String is not required by pop and may be deleted
-func (u Users) String() string {
-	ju, _ := json.Marshal(u)
-	return string(ju)
-}
-
 // Validate gets run every time you call a "pop.Validate*" (pop.ValidateAndSave, pop.ValidateAndCreate, pop.ValidateAndUpdate) method.
 // This method is not required and may be deleted.
-func (u *User) Validate(tx *pop.Connection) (*validate.Errors, error) {
+func (user *User) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	var err error
+
 	return validate.Validate(
-		&validators.StringIsPresent{Field: u.Email, Name: "Email"},
-		&validators.StringIsPresent{Field: u.PasswordHash, Name: "PasswordHash"},
+		// check if string present
+		&validators.StringIsPresent{
+			Field: user.Email,
+			Name:  "Email",
+		},
+		// check if string present
+		&validators.StringIsPresent{
+			Field: user.PasswordHash,
+			Name:  "PasswordHash",
+		},
 		// check to see if the email address is already taken:
 		&validators.FuncValidator{
-			Field:   u.Email,
+			Field:   user.Email,
 			Name:    "Email",
 			Message: "%s is already taken",
 			Fn: func() bool {
 				var b bool
-				q := tx.Where("email = ?", u.Email)
-				if u.ID != uuid.Nil {
-					q = q.Where("id != ?", u.ID)
-				}
-				b, err = q.Exists(u)
+				q := tx.Where("email = ?", user.Email)
+				q = q.Where("id != ?", user.ID)
+
+				b, err = q.Exists(user)
+
 				if err != nil {
 					return false
 				}
+
 				return !b
 			},
 		},
@@ -83,11 +89,20 @@ func (u *User) Validate(tx *pop.Connection) (*validate.Errors, error) {
 
 // ValidateCreate gets run every time you call "pop.ValidateAndCreate" method.
 // This method is not required and may be deleted.
-func (u *User) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
+func (user *User) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
 	var err error
+
 	return validate.Validate(
-		&validators.StringIsPresent{Field: u.Password, Name: "Password"},
-		&validators.StringsMatch{Name: "Password", Field: u.Password, Field2: u.PasswordConfirmation, Message: "Password does not match confirmation"},
+		&validators.StringIsPresent{
+			Field: user.Password,
+			Name:  "Password",
+		},
+		&validators.StringsMatch{
+			Name:    "Password",
+			Field:   user.Password,
+			Field2:  user.PasswordConfirmation,
+			Message: "Password does not match confirmation",
+		},
 	), err
 }
 
