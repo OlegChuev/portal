@@ -1,0 +1,17 @@
+<div class="card">
+  <div class="card-body login-card-body">
+
+    <p class="register-box-msg">Sign up to start interaction with application</p>
+
+    <%= form_for(user, {action: registrationSignUpPath()}) { %>
+      <%= f.InputTag("Email") %>
+      <%= f.InputTag("Name") %>
+      <%= f.InputTag("Password", {type: "password"}) %>
+      <%= f.InputTag("PasswordConfirmation", {type: "password"}) %>
+
+      <div class="pt-4">
+        <button class="btn btn-info w-100">Sign up</button>
+      </div>
+    <% } %>
+  </div>
+</div>

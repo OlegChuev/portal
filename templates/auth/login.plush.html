@@ -1,0 +1,15 @@
+<div class="card">
+  <div class="card-body login-card-body">
+
+    <p class="login-box-msg">Login to start your session</p>
+
+    <%= form_for(user, {action: authLoginPath()}) { %>
+      <%= f.InputTag("Email") %>
+      <%= f.InputTag("Password", {type: "password"}) %>
+
+      <div class="pt-4">
+        <button class="btn btn-success w-100">Login</button>
+      </div>
+    <% } %>
+  </div>
+</div>
